@@ -25,7 +25,7 @@ int main()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_SAMPLES, 4);
 
-	Camera camera = Camera(glm::vec3(1.0, 1.0, 4.0));
+	Camera camera = Camera(glm::vec3(0.0, 0.0, 3.0));
 	camera.faceOrigin();
 
 	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Bezier Curves", NULL, NULL);

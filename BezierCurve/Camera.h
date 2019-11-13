@@ -3,7 +3,7 @@
 
 #ifndef CAMERA_H
 #define CAMERA_H
- 
+
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -46,6 +46,8 @@ public:
 	float MovementSpeed;
 	float MouseSensitivity;
 	float Zoom;
+	float orbit_radius;
+	bool orbit_mode;
 
 	// Constructor with vectors
 	Camera(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f), float yaw = YAW, float pitch = PITCH) : Front(glm::vec3(0.0f, 0.0f, -1.0f)), MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
@@ -54,6 +56,7 @@ public:
 		WorldUp = up;
 		Yaw = yaw;
 		Pitch = pitch;
+		orbit_radius = glm::length(position);
 		updateCameraVectors();
 	}
 	// Constructor with scalar values
@@ -82,17 +85,35 @@ public:
 	{
 		float velocity = MovementSpeed * deltaTime;
 		if (direction == FORWARD)
+		{
 			Position += Front * velocity;
+			orbit_radius -= velocity;
+		}
 		if (direction == BACKWARD)
+		{
 			Position -= Front * velocity;
+			orbit_radius += velocity;
+		}
 		if (direction == LEFT)
-			Position -= Right * velocity;
+		{
+
+		}
+		//Position -= Right * velocity;
 		if (direction == RIGHT)
-			Position += Right * velocity;
+		{
+
+		}
+		//Position += Right * velocity;
 		if (direction == UP)
-			Position += Up * velocity;
+		{
+
+		}
+		//Position += Up * velocity;
 		if (direction == DOWN)
-			Position -= Up * velocity;
+		{
+
+		}
+		//Position -= Up * velocity;
 
 	}
 
@@ -115,7 +136,7 @@ public:
 		}
 
 		// Update Front, Right and Up Vectors using the updated Euler angles
-		updateCameraVectors();
+		updateCameraVectorsOrbit();
 	}
 
 	// Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
@@ -131,6 +152,24 @@ public:
 
 private:
 	// Calculates the front vector from the Camera's (updated) Euler Angles
+	void updateCameraVectorsOrbit()
+	{
+		// Calculate the new Front vector
+		Position += orbit_radius * Front;
+
+		glm::vec3 front;
+		front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+		front.y = sin(glm::radians(Pitch));
+		front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
+		Front = glm::normalize(front);
+
+		Position += orbit_radius * -Front;
+		// Also re-calculate the Right and Up vector
+		Right = glm::normalize(glm::cross(Front, WorldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
+		Up = glm::normalize(glm::cross(Right, Front));
+
+	}
+
 	void updateCameraVectors()
 	{
 		// Calculate the new Front vector
