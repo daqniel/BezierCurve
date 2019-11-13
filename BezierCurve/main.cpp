@@ -16,8 +16,8 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 int main()
 {
-	const float SCR_WIDTH = 1200;
-	const float SCR_HEIGHT = 1200;
+	const float SCR_WIDTH = 1400;
+	const float SCR_HEIGHT = 1400;
 
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -25,7 +25,7 @@ int main()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_SAMPLES, 4);
 
-	Camera camera = Camera(glm::vec3(1.0, 1.0, 2.0));
+	Camera camera = Camera(glm::vec3(1.0, 1.0, 4.0));
 	camera.faceOrigin();
 
 	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Bezier Curves", NULL, NULL);
@@ -54,8 +54,9 @@ int main()
 
 	Shader* linesegmentshader = ResourceManager::loadShader("Shaders/linesegment.vert", "Shaders/linesegment.frag");
 	Shader* gridshader = ResourceManager::loadShader("Shaders/grid.vert", "Shaders/grid.frag");
+	Shader* gridtickshader = ResourceManager::loadShader("Shaders/grid.vert", "Shaders/gridticks.frag", "Shaders/gridticks.geom");
 
-	glClearColor(.7, .7, .7, 1.0);
+	glClearColor(.3, .3, .3, 1.0);
 
 	CubicBezier bezier1;
 	bezier1.setControlPoints(glm::vec3(1, 1, 1), glm::vec3(2, 1, 1), glm::vec3(4, 1, 0), glm::vec3(3.75, 1.25, 0));
@@ -63,6 +64,7 @@ int main()
 	bezier2.setControlPoints(glm::vec3(3.75, 1.25, 0), glm::vec3(3.5, 1.5, 0), glm::vec3(1, 2, 1), glm::vec3(1, 1, 1));
 
 	Grid3D grid;
+	grid.setGridBoundaries(glm::vec3(-3, -3, -3), glm::vec3(3, 3, 3));
 
 	float deltaTime = 0;
 	float lastFrame = 0;
@@ -77,12 +79,15 @@ int main()
 		glm::mat4 model = glm::scale(glm::mat4(1.0), glm::vec3(1.0));
 		glm::mat4 view = glm::lookAt(glm::vec3(0.0, 0.0, 1.0), glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), SCR_WIDTH / SCR_HEIGHT, 0.1f, 100.f);
-
-		grid.draw(gridshader, view , projection);
-
 		view = camera.GetViewMatrix();
+
+		glLineWidth(2);
+		grid.draw(gridshader, view , projection);
+		grid.drawticks(gridtickshader, view, projection);
+
 		bezier1.draw(linesegmentshader, view, projection);
 		bezier2.draw(linesegmentshader, view, projection);
+		glLineWidth(1);
 
 
 

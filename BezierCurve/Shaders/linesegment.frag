@@ -7,5 +7,5 @@ in float t;
 void main()
 {
 	float s = 1-t;
-	FragColor = vec4(t, 0.0, s, 1.0);
+	FragColor = vec4(1.0, 1.0, 1.0, 1.0);
 }

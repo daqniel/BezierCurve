@@ -7,7 +7,6 @@ uniform mat4 view;
 uniform mat4 projection;
 
 out vec3 axis;
-out vec3 worldPos;
 
 void main()
 {
@@ -23,6 +22,5 @@ void main()
 	{
 		axis = vec3(1.0, 0, 0);
 	}
-	worldPos = aPos;
 	gl_Position = projection*view*model*vec4(aPos, 1.0);
 }

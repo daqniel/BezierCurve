@@ -47,10 +47,13 @@
     <None Include="Shaders\grid.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="Shaders\grid.geom">
+    <None Include="Shaders\grid.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
-    <None Include="Shaders\grid.vert">
+    <None Include="Shaders\gridticks.geom">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\gridticks.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>
