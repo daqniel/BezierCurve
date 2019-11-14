@@ -12,6 +12,8 @@ public:
 	CubicBezier();
 	~CubicBezier();
 
+	void setControlColor(glm::vec4 color);
+
 	void setControlPoints(glm::vec3 c0, glm::vec3 c1, glm::vec3 c2, glm::vec3 c3);
 
 	glm::vec4 evaluate(float t);
@@ -19,6 +21,7 @@ public:
 	void draw(Shader* s, glm::mat4 view, glm::mat4 projection);
 	void drawEvalPoint(Shader* s, glm::mat4 view, glm::mat4 projection);
 	void drawControlPoints(Shader* s, glm::mat4 view, glm::mat4 projection);
+	void drawControlPolygon(Shader* s, glm::mat4 view, glm::mat4 projection, int evalLevel);
 private:
 
 	void generate();
@@ -36,6 +39,11 @@ private:
 	GLuint VAO, VBO;
 
 	GLuint controlVAO, controlVBO;
+
+	GLuint polygonVAO, polygonVBO;
+
+	GLuint pointVAO, pointVBO;
 };
+
 
 #endif

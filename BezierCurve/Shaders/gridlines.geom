@@ -12,11 +12,11 @@ uniform mat4 projection;
 
 uniform vec3 pos;
 uniform vec3 neg;
-
 void main()
 {
 		gAxis = axis[0];
 		vec4 point = gl_in[0].gl_Position;
+
 		if(axis[0] == vec3(0, 1.0, 0))
 		{
 			gl_Position = point + vec4(pos.x,0,0, 0);

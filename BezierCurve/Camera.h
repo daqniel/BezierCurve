@@ -95,6 +95,10 @@ public:
 		{
 			Position += Front * velocity;
 			orbit_radius -= velocity;
+			if (orbit_radius < .5)
+			{
+				orbit_radius = .5;
+			}
 		}
 		if (direction == BACKWARD)
 		{

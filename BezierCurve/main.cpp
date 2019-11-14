@@ -20,6 +20,10 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
 bool drawGridLines = false;
+bool drawControlPolygon = false;
+int controlPolygonEvalLevel = 0;
+bool drawControlPoints = true;
+bool drawEvalPoint = true;
 std::map<std::string, std::vector<CubicBezier>> images;
 
 int main()
@@ -63,26 +67,48 @@ int main()
 	glEnable(GL_PROGRAM_POINT_SIZE);
 
 	Shader* linesegmentshader = ResourceManager::loadShader("Shaders/linesegment.vert", "Shaders/linesegment.frag");
+	Shader* controlpolygonshader = ResourceManager::loadShader("Shaders/controlpolygon.vert", "Shaders/controlpolygon.frag");
 	Shader* gridshader = ResourceManager::loadShader("Shaders/grid.vert", "Shaders/grid.frag");
 	Shader* gridtickshader = ResourceManager::loadShader("Shaders/gridticks.vert", "Shaders/gridticks.frag", "Shaders/gridticks.geom");
 	Shader* gridlineshader = ResourceManager::loadShader("Shaders/gridticks.vert", "Shaders/gridlines.frag", "Shaders/gridlines.geom");
 	Shader* bezierpointshader = ResourceManager::loadShader("Shaders/bezierpoint.vert", "Shaders/bezierpoint.frag");
 
 	glClearColor(.3, .3, .3, 1.0);
+	CubicBezier lefteye1;
+	lefteye1.setControlPoints(glm::vec3(1, 3, 2), glm::vec3(1, 4, 2), glm::vec3(1.5f, 4, 2), glm::vec3(1.5f, 3, 2));
+	CubicBezier lefteye2;
+	lefteye2.setControlPoints(glm::vec3(1, 3, 2), glm::vec3(1, 2, 2), glm::vec3(1.5, 2, 2), glm::vec3(1.5, 3, 2));
+	CubicBezier righteye1;
+	righteye1.setControlPoints(glm::vec3(3, 2, 2), glm::vec3(3, 3, 2), glm::vec3(3.5, 3, 2), glm::vec3(3.5, 2, 2));
+	CubicBezier righteye2;
+	righteye2.setControlPoints(glm::vec3(3, 2, 2), glm::vec3(3, 1, 2), glm::vec3(3.5, 1, 2), glm::vec3(3.5, 2, 2));
+	CubicBezier smile;
+	images["smile"].push_back(lefteye1);
+	images["smile"].push_back(lefteye2);
+	images["smile"].push_back(righteye1);
+	images["smile"].push_back(righteye2);
+
 
 	CubicBezier bezier1;
 	bezier1.setControlPoints(glm::vec3(1, 1, 1), glm::vec3(2, 1, 1), glm::vec3(4, 1, 0), glm::vec3(3.75, 1.25, 0));
+	bezier1.setControlColor(glm::vec4(0,1,1,1));
 	CubicBezier bezier2;
 	bezier2.setControlPoints(glm::vec3(3.75, 1.25, 0), glm::vec3(3.5, 1.5, 0), glm::vec3(1, 2, 1), glm::vec3(1, 1, 1));
+	bezier2.setControlColor(glm::vec4(1, 0, 1, 1));
 
 	images["partb"].push_back(bezier1);
 	images["partb"].push_back(bezier2);
 
-	bezier1.setControlPoints(glm::vec3(0), glm::vec3(1), glm::vec3(2), glm::vec3(3));
-	bezier2.setControlPoints(glm::vec3(3), glm::vec3(3.5, 2.5, 3.5), glm::vec3(3, 1.5, 3), glm::vec3(2, .5, 2));
+	CubicBezier bezier3;
+	CubicBezier bezier4;
+	bezier3.setControlPoints(glm::vec3(0), glm::vec3(1), glm::vec3(2), glm::vec3(3));
+	bezier3.setControlColor(glm::vec4(0,1,1,1));
+	bezier4.setControlPoints(glm::vec3(3), glm::vec3(3.5, 2.5, 3.5), glm::vec3(3, 1.5, 3), glm::vec3(2.25, .75, 2.25));
+	bezier4.setControlColor(glm::vec4(1, 0, 1, 1));
+	images["idk"].push_back(bezier3);
+	images["idk"].push_back(bezier4);
 
-	images["idk"].push_back(bezier1);
-	images["idk"].push_back(bezier2);
+
 
 	Grid3D grid;
 	glm::vec3 pos(4);
@@ -96,6 +122,7 @@ int main()
 
 	float time = 0;
 	std::vector<CubicBezier> image;
+	camera.reset();
 	while (!glfwWindowShouldClose(window))
 	{
 		float currentFrame = glfwGetTime();
@@ -123,8 +150,12 @@ int main()
 		for (auto& curve : image)
 		{
 			curve.draw(linesegmentshader, view, projection);
-			curve.drawEvalPoint(bezierpointshader, view, projection);
-			curve.drawControlPoints(bezierpointshader, view, projection);
+			if (drawControlPolygon)
+				curve.drawControlPolygon(controlpolygonshader, view, projection, controlPolygonEvalLevel);
+			if(drawEvalPoint)
+				curve.drawEvalPoint(bezierpointshader, view, projection);
+			if(drawControlPoints)
+				curve.drawControlPoints(bezierpointshader, view, projection);
 		}
 
 		glLineWidth(1);
@@ -133,7 +164,8 @@ int main()
 			camera.ProcessKeyboard(FORWARD, deltaTime);
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 		{
-			time = time < 0 ? 0 : time - .75 * deltaTime;
+			time -= .75 * deltaTime;
+			if (time < 0) time = 0;
 			for (auto& curve : image)
 			{
 				curve.evaluate(time);
@@ -143,7 +175,8 @@ int main()
 			camera.ProcessKeyboard(BACKWARD, deltaTime);
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		{
-			time = time > 1 ? 1 : time + .75 * deltaTime;
+			time += .75 * deltaTime;
+			if (time > 1) time = 1;
 			for (auto& curve : image)
 			{
 				curve.evaluate(time);
@@ -161,6 +194,11 @@ int main()
 			time = 0;
 			image = images["idk"];
 		}
+		if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+		{
+			image = images["smile"];
+		}
+
 
 
 		glfwPollEvents();
@@ -184,6 +222,26 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 	if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
 		drawGridLines = !drawGridLines;
+
+	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS)
+		drawControlPolygon = !drawControlPolygon;
+
+	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+		drawControlPoints = !drawControlPoints;
+
+	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+		drawEvalPoint = !drawEvalPoint;
+
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+	{
+		if(controlPolygonEvalLevel > 0)
+			controlPolygonEvalLevel--;
+	}
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+	{
+		if(controlPolygonEvalLevel < 2)
+			controlPolygonEvalLevel++;
+	}
 
 }
 

@@ -74,6 +74,12 @@
     <None Include="Shaders\bezierPoint.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="Shaders\controlpolygon.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\controlpolygon.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
