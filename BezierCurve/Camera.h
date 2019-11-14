@@ -47,6 +47,8 @@ public:
 	float MouseSensitivity;
 	float Zoom;
 	float orbit_radius;
+
+	glm::vec3 origin;
 	bool orbit_mode;
 
 	// Constructor with vectors
@@ -71,7 +73,12 @@ public:
 
 	void faceOrigin()
 	{
-		Front = glm::normalize(-Position);
+		Front = glm::normalize(origin-Position);
+	}
+
+	void setOrigin(glm::vec3 og)
+	{
+		origin = og;
 	}
 
 	// Returns the view matrix calculated using Euler Angles and the LookAt Matrix
@@ -142,12 +149,34 @@ public:
 	// Processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
 	void ProcessMouseScroll(float yoffset)
 	{
-		if (Zoom >= 1.0f && Zoom <= 45.0f)
-			Zoom -= yoffset;
-		if (Zoom <= 1.0f)
-			Zoom = 1.0f;
-		if (Zoom >= 45.0f)
-			Zoom = 45.0f;
+		float velocity = MovementSpeed*.2;
+
+		if (yoffset > 0)
+		{
+			Position += Front * velocity;
+			orbit_radius -= velocity;
+		}
+		else
+		{
+			Position -= Front * velocity;
+			orbit_radius += velocity;
+		}
+
+		//if (Zoom >= 1.0f && Zoom <= 45.0f)
+		//	Zoom -= yoffset;
+		//if (Zoom <= 1.0f)
+		//	Zoom = 1.0f;
+		//if (Zoom >= 45.0f)
+		//	Zoom = 45.0f;
+	}
+
+	void reset()
+	{
+		Position = origin + glm::vec3(3,3,3);
+		orbit_radius = glm::length(origin-Position);
+		updateCameraVectorsOrbit();
+		Yaw = YAW;
+		Pitch = PITCH;
 	}
 
 private:
@@ -157,12 +186,14 @@ private:
 		// Calculate the new Front vector
 		Position += orbit_radius * Front;
 
+		Position = glm::vec3(0);
 		glm::vec3 front;
 		front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
 		front.y = sin(glm::radians(Pitch));
 		front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
 		Front = glm::normalize(front);
 
+		Position = origin;
 		Position += orbit_radius * -Front;
 		// Also re-calculate the Right and Up vector
 		Right = glm::normalize(glm::cross(Front, WorldUp));  // Normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.

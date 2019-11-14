@@ -42,6 +42,21 @@ void Grid3D::drawticks(Shader* s, glm::mat4 view, glm::mat4 projection)
 	glDrawArrays(GL_POINTS, 0, m_numticks);
 }
 
+void Grid3D::drawticklines(Shader* s, glm::mat4 view, glm::mat4 projection)
+{
+	s->use();
+	s->setMatrix4f("model", glm::scale(glm::mat4(1.0), glm::vec3(m_scale)));
+	s->setMatrix4f("view", view);
+	s->setMatrix4f("projection", projection);
+
+	s->setVect3f("pos", glm::vec3(grid.posx.x, grid.posy.y, grid.posz.z));
+	s->setVect3f("neg", glm::vec3(grid.negx.x, grid.negy.y, grid.negz.z));
+
+	glBindVertexArray(tickVAO);
+	glDrawArrays(GL_POINTS, 0, m_numticks);
+}
+
+
 void Grid3D::setGridBoundaries(glm::vec3 pos, glm::vec3 neg)
 {
 	grid.negx = glm::vec3(neg.x, 0, 0);
@@ -76,6 +91,7 @@ void Grid3D::generate()
 
 void Grid3D::generateTicks(float precision)
 {
+	tickpoints.clear();
 	glm::vec3 xdir = grid.posx - grid.negx;
 	int numticks = int(glm::length(xdir) / precision);
 	xdir = glm::normalize(xdir);

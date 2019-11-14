@@ -18,6 +18,7 @@ public:
 
 	void draw(Shader* s, glm::mat4 view, glm::mat4 projection);
 	void drawticks(Shader* s, glm::mat4 view, glm::mat4 projection);
+	void drawticklines(Shader* s, glm::mat4 view, glm::mat4 projection);
 	void setGridBoundaries(glm::vec3 pos, glm::vec3 neg);
 	void setTickPrecision(float precision);
 private:

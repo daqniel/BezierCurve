@@ -145,10 +145,16 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders\bezierPoint.frag" />
+    <None Include="Shaders\bezierPoint.geom" />
+    <None Include="Shaders\bezierPoint.vert" />
     <None Include="Shaders\grid.frag" />
+    <None Include="Shaders\gridlines.frag" />
+    <None Include="Shaders\gridlines.geom" />
     <None Include="Shaders\gridticks.frag" />
     <None Include="Shaders\gridticks.geom" />
     <None Include="Shaders\grid.vert" />
+    <None Include="Shaders\gridticks.vert" />
     <None Include="Shaders\linesegment.frag" />
     <None Include="Shaders\linesegment.geom" />
     <None Include="Shaders\linesegment.vert" />
