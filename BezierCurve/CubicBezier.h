@@ -5,6 +5,13 @@
 #include <vector>
 #include "Shader.h"
 
+struct FrenetFrame 
+{
+	glm::vec3 tangent;
+	glm::vec3 normal;
+	glm::vec3 binormal;
+};
+
 class CubicBezier
 {
 public:
@@ -22,6 +29,8 @@ public:
 	void drawEvalPoint(Shader* s, glm::mat4 view, glm::mat4 projection);
 	void drawControlPoints(Shader* s, glm::mat4 view, glm::mat4 projection);
 	void drawControlPolygon(Shader* s, glm::mat4 view, glm::mat4 projection, int evalLevel);
+	void drawFrenetFrame(Shader* s, glm::mat4 view, glm::mat4 projection);
+
 private:
 
 	void generate();
@@ -43,7 +52,10 @@ private:
 	GLuint polygonVAO, polygonVBO;
 
 	GLuint pointVAO, pointVBO;
+
+	GLuint frenetVAO, frenetVBO;
 };
+
 
 
 #endif

@@ -80,6 +80,15 @@
     <None Include="Shaders\controlpolygon.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="Shaders\frenet.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\frenet.geom">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\frenet.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">

@@ -28,8 +28,8 @@ std::map<std::string, std::vector<CubicBezier>> images;
 
 int main()
 {
-	const float SCR_WIDTH = 1400;
-	const float SCR_HEIGHT = 1200;
+	const float SCR_WIDTH = 1600;
+	const float SCR_HEIGHT = 1400;
 
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -72,6 +72,7 @@ int main()
 	Shader* gridtickshader = ResourceManager::loadShader("Shaders/gridticks.vert", "Shaders/gridticks.frag", "Shaders/gridticks.geom");
 	Shader* gridlineshader = ResourceManager::loadShader("Shaders/gridticks.vert", "Shaders/gridlines.frag", "Shaders/gridlines.geom");
 	Shader* bezierpointshader = ResourceManager::loadShader("Shaders/bezierpoint.vert", "Shaders/bezierpoint.frag");
+	Shader* frenetshader = ResourceManager::loadShader("Shaders/frenet.vert", "Shaders/frenet.frag", "Shaders/frenet.geom");
 
 	glClearColor(.3, .3, .3, 1.0);
 	CubicBezier lefteye1;
@@ -79,15 +80,16 @@ int main()
 	CubicBezier lefteye2;
 	lefteye2.setControlPoints(glm::vec3(1, 3, 2), glm::vec3(1, 2, 2), glm::vec3(1.5, 2, 2), glm::vec3(1.5, 3, 2));
 	CubicBezier righteye1;
-	righteye1.setControlPoints(glm::vec3(3, 2, 2), glm::vec3(3, 3, 2), glm::vec3(3.5, 3, 2), glm::vec3(3.5, 2, 2));
+	righteye1.setControlPoints(glm::vec3(2, 3, 2), glm::vec3(2, 4, 2), glm::vec3(2.5, 4, 2), glm::vec3(2.5, 3, 2));
 	CubicBezier righteye2;
-	righteye2.setControlPoints(glm::vec3(3, 2, 2), glm::vec3(3, 1, 2), glm::vec3(3.5, 1, 2), glm::vec3(3.5, 2, 2));
+	righteye2.setControlPoints(glm::vec3(2, 3, 2), glm::vec3(2, 2, 2), glm::vec3(2.5, 2, 2), glm::vec3(2.5, 3, 2));
 	CubicBezier smile;
+	smile.setControlPoints(glm::vec3(.5, 2, 2), glm::vec3(1.75, 1, 2), glm::vec3(2.375, 1, 2), glm::vec3(3, 2, 2));
 	images["smile"].push_back(lefteye1);
 	images["smile"].push_back(lefteye2);
 	images["smile"].push_back(righteye1);
 	images["smile"].push_back(righteye2);
-
+	images["smile"].push_back(smile);
 
 	CubicBezier bezier1;
 	bezier1.setControlPoints(glm::vec3(1, 1, 1), glm::vec3(2, 1, 1), glm::vec3(4, 1, 0), glm::vec3(3.75, 1.25, 0));
@@ -150,6 +152,7 @@ int main()
 		for (auto& curve : image)
 		{
 			curve.draw(linesegmentshader, view, projection);
+			curve.drawFrenetFrame(frenetshader, view, projection);
 			if (drawControlPolygon)
 				curve.drawControlPolygon(controlpolygonshader, view, projection, controlPolygonEvalLevel);
 			if(drawEvalPoint)
@@ -196,6 +199,7 @@ int main()
 		}
 		if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
 		{
+			time = 0;
 			image = images["smile"];
 		}
 

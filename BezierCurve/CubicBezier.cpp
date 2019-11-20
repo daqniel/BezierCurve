@@ -15,6 +15,9 @@ CubicBezier::CubicBezier()
 	glGenVertexArrays(1, &pointVAO);
 	glGenBuffers(1, &pointVBO);
 
+	glGenVertexArrays(1, &frenetVAO);
+	glGenBuffers(1, &frenetVBO);
+
 	m_interval = 0.01f;
 	control_point_color = glm::vec4(1);
 
@@ -86,7 +89,7 @@ void CubicBezier::draw(Shader* s, glm::mat4 view, glm::mat4 projection)
 
 	glBindVertexArray(VAO);
 
-	
+
 	glDrawArrays(GL_LINE_STRIP, 0, points.size());
 
 }
@@ -97,7 +100,7 @@ void CubicBezier::drawEvalPoint(Shader* s, glm::mat4 view, glm::mat4 projection)
 	s->setMatrix4f("model", glm::mat4(1.0));
 	s->setMatrix4f("view", view);
 	s->setMatrix4f("projection", projection);
-
+	s->setVect3f("control_color", glm::vec3(0));
 	glBindVertexArray(pointVAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, pointVBO);
@@ -107,9 +110,6 @@ void CubicBezier::drawEvalPoint(Shader* s, glm::mat4 view, glm::mat4 projection)
 	glEnableVertexAttribArray(0);
 
 	glDrawArrays(GL_POINTS, 0, 1);
-
-	//glDeleteBuffers(1, &pointVBO);
-	//glDeleteVertexArrays(1, &pointVAO);
 }
 
 void CubicBezier::drawControlPoints(Shader* s, glm::mat4 view, glm::mat4 projection)
@@ -140,7 +140,6 @@ void CubicBezier::drawControlPolygon(Shader* s, glm::mat4 view, glm::mat4 projec
 	s->setMatrix4f("projection", projection);
 	s->setFloat("eval_level", evalLevel);
 	s->setVect3f("control_color", control_point_color);
-	
 
 	glBindVertexArray(polygonVAO);
 
@@ -148,15 +147,71 @@ void CubicBezier::drawControlPolygon(Shader* s, glm::mat4 view, glm::mat4 projec
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 4, m_controlpoints ,GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 4, m_controlpoints, GL_STATIC_DRAW);
 	glDrawArrays(GL_LINE_STRIP, 0, 4);
-	
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 3, m_level1 ,GL_STATIC_DRAW);
+
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 3, m_level1, GL_STATIC_DRAW);
 	glDrawArrays(GL_LINE_STRIP, 0, 3);
 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 2, m_level2 ,GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 2, m_level2, GL_STATIC_DRAW);
 	glDrawArrays(GL_LINE_STRIP, 0, 2);
+}
 
+void CubicBezier::drawFrenetFrame(Shader* s, glm::mat4 view, glm::mat4 projection)
+{
+
+	//probably need to parametrize to arclength or some shit idk
+	glm::vec4 next_point;
+	glm::vec4 next_next_point;
+	for (int i = 0; i < points.size() - 1; i++)
+	{
+		if (points[i].w > m_eval_point.w)
+		{
+			next_point = points[i];
+			next_next_point = points[i + 1];
+			break;
+		}
+	}
+	glm::vec3 gradient = glm::normalize(glm::vec3(next_point - m_eval_point));
+	glm::vec3 gradient2 = glm::normalize(glm::vec3(next_next_point - next_point));
+	glm::vec3 gradientofgradient = glm::normalize(gradient2 - gradient);
+
+	glm::vec3 tangent = gradient;
+	glm::vec3 normal = gradientofgradient;
+	glm::vec3 binormal = glm::cross(tangent, normal);
+
+	glm::vec3 test1(0, 0, 1);
+	glm::vec3 test2(0, 1, 0);
+	glm::vec3 test3(1, 0, 0);
+
+	// use uniform buffer block thing maybe 
+	//FrenetFrame frame;
+	//frame.tangent = tangent;
+	//frame.normal = normal;
+	//frame.binormal = binormal;
+
+	s->use();
+	s->setMatrix4f("model", glm::mat4(1.0));
+	s->setMatrix4f("view", view);
+	s->setMatrix4f("projection", projection);
+
+	s->setVect3f("tangent", test1);
+	s->setVect3f("normal", test2);
+	s->setVect3f("binormal", test3);
+
+	s->setVect3f("control_color", control_point_color);
+
+	//probably need to paramatrize to arclength or something
+
+	glBindVertexArray(frenetVAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, frenetVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4, &m_eval_point, GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glDrawArrays(GL_POINTS, 0, 1);
 
 }
 
@@ -178,6 +233,6 @@ void CubicBezier::generate()
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER,0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 }
