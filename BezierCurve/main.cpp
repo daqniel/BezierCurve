@@ -24,6 +24,7 @@ bool drawControlPolygon = false;
 int controlPolygonEvalLevel = 0;
 bool drawControlPoints = true;
 bool drawEvalPoint = true;
+bool drawFrenetFrame = false;
 std::map<std::string, std::vector<CubicBezier>> images;
 
 int main()
@@ -93,7 +94,7 @@ int main()
 
 	CubicBezier bezier1;
 	bezier1.setControlPoints(glm::vec3(1, 1, 1), glm::vec3(2, 1, 1), glm::vec3(4, 1, 0), glm::vec3(3.75, 1.25, 0));
-	bezier1.setControlColor(glm::vec4(0,1,1,1));
+	bezier1.setControlColor(glm::vec4(0, 1, 1, 1));
 	CubicBezier bezier2;
 	bezier2.setControlPoints(glm::vec3(3.75, 1.25, 0), glm::vec3(3.5, 1.5, 0), glm::vec3(1, 2, 1), glm::vec3(1, 1, 1));
 	bezier2.setControlColor(glm::vec4(1, 0, 1, 1));
@@ -104,13 +105,25 @@ int main()
 	CubicBezier bezier3;
 	CubicBezier bezier4;
 	bezier3.setControlPoints(glm::vec3(0), glm::vec3(1), glm::vec3(2), glm::vec3(3));
-	bezier3.setControlColor(glm::vec4(0,1,1,1));
+	bezier3.setControlColor(glm::vec4(0, 1, 1, 1));
 	bezier4.setControlPoints(glm::vec3(3), glm::vec3(3.5, 2.5, 3.5), glm::vec3(3, 1.5, 3), glm::vec3(2.25, .75, 2.25));
 	bezier4.setControlColor(glm::vec4(1, 0, 1, 1));
 	images["idk"].push_back(bezier3);
 	images["idk"].push_back(bezier4);
 
 
+	CubicBezier test1;
+	CubicBezier test2;
+	CubicBezier test3;
+	CubicBezier test4;
+	test1.setControlPoints(glm::vec3(0, 0, 3), glm::vec3(2, 0, 3), glm::vec3(3, 0, 2), glm::vec3(3, 0, 0));
+	images["octoid"].push_back(test1);
+	test2.setControlPoints(glm::vec3(0, 0, 3), glm::vec3(0, 2, 3), glm::vec3(0, 3, 2), glm::vec3(0, 3, 0));
+	images["octoid"].push_back(test2);
+	test3.setControlPoints(glm::vec3(0, 3, 0), glm::vec3(2, 3, 0), glm::vec3(3, 2, 0), glm::vec3(3, 0, 0));
+	images["octoid"].push_back(test3);
+	test4.setControlPoints(glm::vec3(0, 2, 3), glm::vec3(3, 3, 3), glm::vec3(3, 3, 3), glm::vec3(3, 2, 0));
+	images["octoid"].push_back(test4);
 
 	Grid3D grid;
 	glm::vec3 pos(4);
@@ -152,13 +165,17 @@ int main()
 		for (auto& curve : image)
 		{
 			curve.draw(linesegmentshader, view, projection);
-			curve.drawFrenetFrame(frenetshader, view, projection);
 			if (drawControlPolygon)
 				curve.drawControlPolygon(controlpolygonshader, view, projection, controlPolygonEvalLevel);
-			if(drawEvalPoint)
+			if (drawEvalPoint)
 				curve.drawEvalPoint(bezierpointshader, view, projection);
-			if(drawControlPoints)
+			if (drawControlPoints)
 				curve.drawControlPoints(bezierpointshader, view, projection);
+			if (drawFrenetFrame)
+			{
+				glClear(GL_DEPTH_BUFFER_BIT);
+				curve.drawFrenetFrame(frenetshader, view, projection);
+			}
 		}
 
 		glLineWidth(1);
@@ -202,6 +219,11 @@ int main()
 			time = 0;
 			image = images["smile"];
 		}
+		if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
+		{
+			time = 0;
+			image = images["octoid"];
+		}
 
 
 
@@ -236,14 +258,17 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
 		drawEvalPoint = !drawEvalPoint;
 
+	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
+		drawFrenetFrame = !drawFrenetFrame;
+
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 	{
-		if(controlPolygonEvalLevel > 0)
+		if (controlPolygonEvalLevel > 0)
 			controlPolygonEvalLevel--;
 	}
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 	{
-		if(controlPolygonEvalLevel < 2)
+		if (controlPolygonEvalLevel < 2)
 			controlPolygonEvalLevel++;
 	}
 

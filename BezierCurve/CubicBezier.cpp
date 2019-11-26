@@ -159,30 +159,45 @@ void CubicBezier::drawControlPolygon(Shader* s, glm::mat4 view, glm::mat4 projec
 
 void CubicBezier::drawFrenetFrame(Shader* s, glm::mat4 view, glm::mat4 projection)
 {
+	glm::vec4 empty;
 
 	//probably need to parametrize to arclength or some shit idk
+	glm::vec4 prev_point;
+	glm::vec4 prev_prev_point;
 	glm::vec4 next_point;
 	glm::vec4 next_next_point;
 	for (int i = 0; i < points.size() - 1; i++)
 	{
+		if (i > 1)
+		{
+			prev_prev_point = points[i - 2];
+			prev_point = points[i - 1];
+		}
+
 		if (points[i].w > m_eval_point.w)
 		{
+
 			next_point = points[i];
 			next_next_point = points[i + 1];
 			break;
 		}
 	}
-	glm::vec3 gradient = glm::normalize(glm::vec3(next_point - m_eval_point));
+	glm::vec4 eval_point = m_eval_point;
+
+	if (next_point == empty)
+	{
+		next_next_point = eval_point;
+		next_point = prev_point;
+		eval_point = prev_prev_point;
+	}
+		
+	glm::vec3 gradient = glm::normalize(glm::vec3(next_point - eval_point));
 	glm::vec3 gradient2 = glm::normalize(glm::vec3(next_next_point - next_point));
 	glm::vec3 gradientofgradient = glm::normalize(gradient2 - gradient);
 
 	glm::vec3 tangent = gradient;
 	glm::vec3 normal = gradientofgradient;
 	glm::vec3 binormal = glm::cross(tangent, normal);
-
-	glm::vec3 test1(0, 0, 1);
-	glm::vec3 test2(0, 1, 0);
-	glm::vec3 test3(1, 0, 0);
 
 	// use uniform buffer block thing maybe 
 	//FrenetFrame frame;
@@ -195,9 +210,9 @@ void CubicBezier::drawFrenetFrame(Shader* s, glm::mat4 view, glm::mat4 projectio
 	s->setMatrix4f("view", view);
 	s->setMatrix4f("projection", projection);
 
-	s->setVect3f("tangent", test1);
-	s->setVect3f("normal", test2);
-	s->setVect3f("binormal", test3);
+	s->setVect3f("tangent", tangent);
+	s->setVect3f("normal", normal);
+	s->setVect3f("binormal", binormal);
 
 	s->setVect3f("control_color", control_point_color);
 
