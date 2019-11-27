@@ -138,11 +138,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Bezier.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CubicBezier.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Grid3D.cpp" />
+    <ClCompile Include="QuadraticBezierPatch.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="QuadraticBezier.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\bezierPoint.frag" />
@@ -163,11 +166,16 @@
     <None Include="Shaders\linesegment.frag" />
     <None Include="Shaders\linesegment.geom" />
     <None Include="Shaders\linesegment.vert" />
+    <None Include="Shaders\patch.frag" />
+    <None Include="Shaders\patch.vert" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bezier.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CubicBezier.h" />
     <ClInclude Include="Grid3D.h" />
+    <ClInclude Include="QuadraticBezierPatch.h" />
+    <ClInclude Include="QuadraticBezier.h" />
     <ClInclude Include="ResourceManager.h" />
     <ClInclude Include="Shader.h" />
   </ItemGroup>

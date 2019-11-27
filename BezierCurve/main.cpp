@@ -12,6 +12,8 @@
 #include "ResourceManager.h"
 #include "Camera.h"
 #include "CubicBezier.h"
+#include "QuadraticBezier.h"
+#include "QuadraticBezierPatch.h"
 #include "Grid3D.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -74,6 +76,7 @@ int main()
 	Shader* gridlineshader = ResourceManager::loadShader("Shaders/gridticks.vert", "Shaders/gridlines.frag", "Shaders/gridlines.geom");
 	Shader* bezierpointshader = ResourceManager::loadShader("Shaders/bezierpoint.vert", "Shaders/bezierpoint.frag");
 	Shader* frenetshader = ResourceManager::loadShader("Shaders/frenet.vert", "Shaders/frenet.frag", "Shaders/frenet.geom");
+	Shader* patchshader = ResourceManager::loadShader("Shaders/patch.vert", "Shaders/patch.frag");
 
 	glClearColor(.3, .3, .3, 1.0);
 	CubicBezier lefteye1;
@@ -128,6 +131,9 @@ int main()
 	Grid3D grid;
 	glm::vec3 pos(4);
 	glm::vec3 neg(0);
+
+	neg = glm::vec3(-3);
+	pos = glm::vec3(3);
 	grid.setGridBoundaries(pos, neg);
 
 	camera.origin = glm::vec3((pos.x + neg.x) / 2, (pos.y + neg.y) / 2, -(pos.z + neg.z) / 2);
@@ -138,6 +144,13 @@ int main()
 	float time = 0;
 	std::vector<CubicBezier> image;
 	camera.reset();
+
+	QuadraticBezier quadBezier;
+	quadBezier.setControlPoints(glm::vec3(0), glm::vec3(1), glm::vec3(2, 0, 2));
+
+	QuadraticBezierPatch hexoid;
+	hexoid.generate(.01);
+
 	while (!glfwWindowShouldClose(window))
 	{
 		float currentFrame = glfwGetTime();
@@ -161,6 +174,8 @@ int main()
 		grid.draw(gridshader, view, projection);
 		grid.drawticks(gridtickshader, view, projection);
 
+		quadBezier.draw(linesegmentshader, view, projection);
+		hexoid.draw(patchshader, view, projection);
 
 		for (auto& curve : image)
 		{
@@ -190,6 +205,7 @@ int main()
 			{
 				curve.evaluate(time);
 			}
+			quadBezier.evaluate(time);
 		}
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 			camera.ProcessKeyboard(BACKWARD, deltaTime);
@@ -201,6 +217,7 @@ int main()
 			{
 				curve.evaluate(time);
 			}
+			quadBezier.evaluate(time);
 		}
 		if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
 			camera.reset();

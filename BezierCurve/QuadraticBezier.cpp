@@ -1,6 +1,6 @@
-#include "CubicBezier.h"
+#include "QuadraticBezier.h"
 
-CubicBezier::CubicBezier()
+QuadraticBezier::QuadraticBezier()
 {
 
 	glGenVertexArrays(1, &controlVAO);
@@ -23,7 +23,7 @@ CubicBezier::CubicBezier()
 
 }
 
-CubicBezier::~CubicBezier()
+QuadraticBezier::~QuadraticBezier()
 {
 	//glDeleteBuffers(1, &VBO);
 	//glDeleteBuffers(1, &controlVBO);
@@ -34,17 +34,16 @@ CubicBezier::~CubicBezier()
 	//glDeleteVertexArrays(1, &polygonVAO);
 }
 
-void CubicBezier::setControlColor(glm::vec4 color)
+void QuadraticBezier::setControlColor(glm::vec4 color)
 {
 	control_point_color = color;
 }
 
-void CubicBezier::setControlPoints(glm::vec3 c0, glm::vec3 c1, glm::vec3 c2, glm::vec3 c3)
+void QuadraticBezier::setControlPoints(glm::vec3 c0, glm::vec3 c1, glm::vec3 c2)
 {
 	m_controlpoints[0] = glm::vec4(c0, 0);
 	m_controlpoints[1] = glm::vec4(c1, 0);
 	m_controlpoints[2] = glm::vec4(c2, 0);
-	m_controlpoints[3] = glm::vec4(c3, 0);
 
 	generate();
 }
@@ -58,27 +57,22 @@ void CubicBezier::setControlPoints(glm::vec3 c0, glm::vec3 c1, glm::vec3 c2, glm
 //
 //}
 
-glm::vec4 CubicBezier::evaluate(float t)
+glm::vec4 QuadraticBezier::evaluate(float t)
 {
 	float s = 1 - t;
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 2; i++)
 	{
 		m_level1[i] = glm::vec4(glm::vec3(m_controlpoints[i]) * s + glm::vec3(m_controlpoints[i + 1]) * t, 1);
 	}
 
-	for (int i = 0; i < 2; i++)
-	{
-		m_level2[i] = glm::vec4(glm::vec3(m_level1[i]) * s + glm::vec3(m_level1[i + 1] * t), 2);
-	}
-
-	m_eval_point = glm::vec4(glm::vec3(m_level2[0]) * s + glm::vec3(m_level2[1]) * t, t);
+	m_eval_point = glm::vec4(glm::vec3(m_level1[0]) * s + glm::vec3(m_level1[1]) * t, t);
 
 	// MAYBE CHANGE CLASS STRUCTURE, PROBABLY WANT TO STORE MULTIPLE SAMPLES OF EVALUATION.
 	// OR, have it evaluate in constructor and store all the points we need to display, use geometry shader for showing steps?
 	return m_eval_point;
 }
 
-void CubicBezier::draw(Shader* s, glm::mat4 view, glm::mat4 projection)
+void QuadraticBezier::draw(Shader* s, glm::mat4 view, glm::mat4 projection)
 {
 	s->use();
 	s->setMatrix4f("model", glm::mat4(1.0));
@@ -94,7 +88,7 @@ void CubicBezier::draw(Shader* s, glm::mat4 view, glm::mat4 projection)
 
 }
 
-void CubicBezier::drawEvalPoint(Shader* s, glm::mat4 view, glm::mat4 projection)
+void QuadraticBezier::drawEvalPoint(Shader* s, glm::mat4 view, glm::mat4 projection)
 {
 	s->use();
 	s->setMatrix4f("model", glm::mat4(1.0));
@@ -112,7 +106,7 @@ void CubicBezier::drawEvalPoint(Shader* s, glm::mat4 view, glm::mat4 projection)
 	glDrawArrays(GL_POINTS, 0, 1);
 }
 
-void CubicBezier::drawControlPoints(Shader* s, glm::mat4 view, glm::mat4 projection)
+void QuadraticBezier::drawControlPoints(Shader* s, glm::mat4 view, glm::mat4 projection)
 {
 
 	s->use();
@@ -124,7 +118,7 @@ void CubicBezier::drawControlPoints(Shader* s, glm::mat4 view, glm::mat4 project
 	glBindVertexArray(controlVAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, controlVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 4, &m_controlpoints, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 3, &m_controlpoints, GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
@@ -132,7 +126,7 @@ void CubicBezier::drawControlPoints(Shader* s, glm::mat4 view, glm::mat4 project
 	glDrawArrays(GL_POINTS, 0, 4);
 }
 
-void CubicBezier::drawControlPolygon(Shader* s, glm::mat4 view, glm::mat4 projection, int evalLevel)
+void QuadraticBezier::drawControlPolygon(Shader* s, glm::mat4 view, glm::mat4 projection, int evalLevel)
 {
 	s->use();
 	s->setMatrix4f("model", glm::mat4(1.0));
@@ -148,16 +142,13 @@ void CubicBezier::drawControlPolygon(Shader* s, glm::mat4 view, glm::mat4 projec
 	glEnableVertexAttribArray(0);
 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 4, m_controlpoints, GL_STATIC_DRAW);
-	glDrawArrays(GL_LINE_STRIP, 0, 4);
-
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 3, m_level1, GL_STATIC_DRAW);
 	glDrawArrays(GL_LINE_STRIP, 0, 3);
 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 2, m_level2, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * 3, m_level1, GL_STATIC_DRAW);
 	glDrawArrays(GL_LINE_STRIP, 0, 2);
 }
 
-void CubicBezier::drawFrenetFrame(Shader* s, glm::mat4 view, glm::mat4 projection)
+void QuadraticBezier::drawFrenetFrame(Shader* s, glm::mat4 view, glm::mat4 projection)
 {
 	glm::vec4 empty;
 
@@ -190,7 +181,7 @@ void CubicBezier::drawFrenetFrame(Shader* s, glm::mat4 view, glm::mat4 projectio
 		next_point = prev_point;
 		eval_point = prev_prev_point;
 	}
-		
+
 	glm::vec3 gradient = glm::normalize(glm::vec3(next_point - eval_point));
 	glm::vec3 gradient2 = glm::normalize(glm::vec3(next_next_point - next_point));
 	glm::vec3 gradientofgradient = glm::normalize(gradient2 - gradient);
@@ -231,7 +222,7 @@ void CubicBezier::drawFrenetFrame(Shader* s, glm::mat4 view, glm::mat4 projectio
 }
 
 
-void CubicBezier::generate()
+void QuadraticBezier::generate()
 {
 	points.clear();
 

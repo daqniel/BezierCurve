@@ -1,5 +1,5 @@
-#ifndef _CUBIC_BEZIER_H_
-#define _CUBIC_BEZIER_H_
+#ifndef _QUADRATIC_BEZIER_H_
+#define _QUADRATIC_BEZIER_H_
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
@@ -7,7 +7,7 @@
 
 #ifndef _FRENETFRAME_H_
 #define _FRENETFRAME_H_
-struct FrenetFrame 
+struct FrenetFrame
 {
 	glm::vec3 tangent;
 	glm::vec3 normal;
@@ -15,16 +15,20 @@ struct FrenetFrame
 };
 #endif
 
-class CubicBezier
+class QuadraticBezier
 {
 public:
 
-	CubicBezier();
-	~CubicBezier();
+	QuadraticBezier();
+	~QuadraticBezier();
 
 	void setControlColor(glm::vec4 color);
+	void setInterval(float i) {
+		m_interval = i;
+	}
+	void setControlPoints(glm::vec3 c0, glm::vec3 c1, glm::vec3 c2);
 
-	void setControlPoints(glm::vec3 c0, glm::vec3 c1, glm::vec3 c2, glm::vec3 c3);
+	std::vector<glm::vec4> getPoints() { return points; }
 
 	glm::vec4 evaluate(float t);
 
@@ -37,9 +41,8 @@ public:
 private:
 
 	void generate();
-	glm::vec4 m_controlpoints[4];
-	glm::vec4 m_level1[3];
-	glm::vec4 m_level2[2];
+	glm::vec4 m_controlpoints[3];
+	glm::vec4 m_level1[2];
 
 	glm::vec3 control_point_color;
 

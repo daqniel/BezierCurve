@@ -33,6 +33,15 @@
     <ClCompile Include="Grid3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="QuadraticBezier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Bezier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QuadraticBezierPatch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\linesegment.frag">
@@ -89,6 +98,12 @@
     <None Include="Shaders\frenet.vert">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="Shaders\patch.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\patch.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -104,6 +119,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Grid3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QuadraticBezier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Bezier.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QuadraticBezierPatch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
