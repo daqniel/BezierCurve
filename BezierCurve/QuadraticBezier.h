@@ -30,6 +30,8 @@ public:
 
 	std::vector<glm::vec4> getPoints() { return points; }
 
+	const glm::vec4* getControlPoints() { return m_controlpoints; }
+
 	glm::vec4 evaluate(float t);
 
 	void draw(Shader* s, glm::mat4 view, glm::mat4 projection);

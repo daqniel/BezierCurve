@@ -4,6 +4,9 @@ QuadraticBezierPatch::QuadraticBezierPatch()
 {
 	glGenVertexArrays(1, &triangleVAO);
 	glGenBuffers(1, &triangleVBO);
+
+	glGenVertexArrays(1, &controlNetVAO);
+	glGenBuffers(1, &controlNetVBO);
 }
 
 QuadraticBezierPatch::~QuadraticBezierPatch()
@@ -20,6 +23,22 @@ void QuadraticBezierPatch::generate(float interval)
 	row1.setControlPoints(glm::vec3(-2, -2, 2), glm::vec3(-3, 0, 3), glm::vec3(-2, 2, 2));
 	row2.setControlPoints(glm::vec3(0, -3, 3), glm::vec3(0, 0, 7), glm::vec3(0, 3, 3));
 	row3.setControlPoints(glm::vec3(2, -2, 2), glm::vec3(3, 0, 3), glm::vec3(2, 2, 2));
+
+	const glm::vec4* controlpoints = row1.getControlPoints();
+	for (int i = 0; i < 3; i++)
+	{
+		controlNet.push_back(controlpoints[i]);
+	}
+	controlpoints = row2.getControlPoints();
+	for (int i = 0; i < 3; i++)
+	{
+		controlNet.push_back(controlpoints[i]);
+	}
+	controlpoints = row3.getControlPoints();
+	for (int i = 0; i < 3; i++)
+	{
+		controlNet.push_back(controlpoints[i]);
+	}
 
 	std::vector<glm::vec4> row1points = row1.getPoints();
 	std::vector<glm::vec4> row2points = row2.getPoints();
@@ -71,6 +90,40 @@ void QuadraticBezierPatch::draw(Shader* s, glm::mat4 view, glm::mat4 projection)
 
 	s->setMatrix4f("model", glm::rotate(model, glm::radians(-90.f), glm::vec3(1, 0, 0)));
 	glDrawArrays(GL_LINE_STRIP, 0, points.size());
+}
+
+void QuadraticBezierPatch::drawControlNet(Shader* s, glm::mat4 view, glm::mat4 projection)
+{
+	glm::mat4 model(1.0);
+	s->use();
+	s->setMatrix4f("model", glm::mat4(1.0));
+	s->setMatrix4f("view", view);
+	s->setMatrix4f("projection", projection);
+
+	glBindVertexArray(controlNetVAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, controlNetVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 4 * controlNet.size(), controlNet.data(), GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glDrawArrays(GL_POINTS, 0, controlNet.size());
+
+	s->setMatrix4f("model", glm::rotate(model, glm::radians(90.f), glm::vec3(0, 1, 0)));
+	glDrawArrays(GL_POINTS, 0, controlNet.size());
+
+	s->setMatrix4f("model", glm::rotate(model, glm::radians(180.f), glm::vec3(0, 1, 0)));
+	glDrawArrays(GL_POINTS, 0, controlNet.size());
+
+	s->setMatrix4f("model", glm::rotate(model, glm::radians(270.f), glm::vec3(0, 1, 0)));
+	glDrawArrays(GL_POINTS, 0, controlNet.size());
+
+	s->setMatrix4f("model", glm::rotate(model, glm::radians(90.f), glm::vec3(1, 0, 0)));
+	glDrawArrays(GL_POINTS, 0, controlNet.size());
+
+	s->setMatrix4f("model", glm::rotate(model, glm::radians(-90.f), glm::vec3(1, 0, 0)));
+	glDrawArrays(GL_POINTS, 0, controlNet.size());
 
 
 }

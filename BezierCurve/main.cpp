@@ -31,8 +31,8 @@ std::map<std::string, std::vector<CubicBezier>> images;
 
 int main()
 {
-	const float SCR_WIDTH = 1600;
-	const float SCR_HEIGHT = 1400;
+	const float SCR_WIDTH = 1000;
+	const float SCR_HEIGHT = 1000;
 
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -175,7 +175,10 @@ int main()
 		grid.drawticks(gridtickshader, view, projection);
 
 		quadBezier.draw(linesegmentshader, view, projection);
+
+
 		hexoid.draw(patchshader, view, projection);
+		hexoid.drawControlNet(bezierpointshader, view, projection);
 
 		for (auto& curve : image)
 		{
