@@ -9,7 +9,7 @@ public:
 	unsigned int ID;
 
 	// Import shaders from file, compile, and link them.
-	Shader(int* success, char* infoLog, unsigned int vertex, unsigned int fragment, unsigned int geometry = -1)
+	Shader(int* success, char* infoLog, unsigned int vertex, unsigned int fragment, unsigned int geometry = -1, unsigned int tcs = -1, unsigned int tes = -1)
 	{
 		ID = glCreateProgram();
 		glAttachShader(ID, vertex);

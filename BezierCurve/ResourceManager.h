@@ -52,8 +52,77 @@ public:
 	//	stbi_image_free(data);
 	//	return newTexture.ID;
 	//}
+	enum ShaderType
+	{
+		VERTEX,
+		FRAGMENT,
+		GEOMETRY,
+		TCS,
+		TES
+	};
+	static unsigned int compileShader(const GLchar* path, ShaderType type)
+	{
+		int success;
+		char* infoLog = new char[512];
 
-	static Shader* loadShader(const GLchar* vertexPath, const GLchar* fragPath, const GLchar* geomPath = nullptr)
+		std::string shaderCode;
+		std::ifstream shaderFile;
+
+		shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+		try
+		{
+			shaderFile.open(path);
+			std::stringstream shaderStream;
+			shaderStream << shaderFile.rdbuf();
+			shaderFile.close();
+			shaderCode = shaderStream.str();
+		}
+		catch (std::ifstream::failure e)
+		{
+			std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ::" << path << std::endl;
+			return -1;
+		}
+
+		const char* shaderCodeStr = shaderCode.c_str();
+
+		// compile
+		unsigned int shader;
+		switch (type)
+		{
+		case ShaderType::VERTEX:
+			shader = glCreateShader(GL_VERTEX_SHADER);
+			break;
+		case ShaderType::FRAGMENT:
+			shader = glCreateShader(GL_FRAGMENT_SHADER);
+			break;
+		case ShaderType::GEOMETRY:
+			shader = glCreateShader(GL_GEOMETRY_SHADER);
+			break;
+		case ShaderType::TCS:
+			shader = glCreateShader(GL_TESS_CONTROL_SHADER);
+			break;
+		case ShaderType::TES:
+			shader = glCreateShader(GL_VERTEX_SHADER);
+			break;
+
+		}
+
+
+
+		glShaderSource(shader, 1, &shaderCodeStr, NULL);
+		glCompileShader(shader);
+		glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+		if (!success)
+		{
+			glGetShaderInfoLog(shader, 512, NULL, infoLog);
+			std::cout << "ERROR::SHADER::VERTEX::COMPILE_FAILED\n" << infoLog << std::endl;
+			return nullptr;
+		}
+
+	}
+
+
+	static Shader* loadShader(const GLchar* vertexPath, const GLchar* fragPath, const GLchar* geomPath = nullptr, const GLchar* tcsPath = nullptr, const GLchar* tesPath = nullptr)
 	{
 		/*if (numShaders == MAX_NUM_SHADERS)
 		{
@@ -124,6 +193,7 @@ public:
 			std::cout << "ERROR::SHADER::VERTEX::COMPILE_FAILED\n" << infoLog << std::endl;
 			return nullptr;
 		}
+
 		// fragment shader
 		fragment = glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(fragment, 1, &fShaderCode, NULL);
@@ -154,8 +224,8 @@ public:
 
 		/* Step 3: Create program */
 		Shader* newShader = nullptr;
-		if(geomPath)
-			newShader = new Shader(&success, infoLog, vertex, fragment, geometry);
+		if (geomPath)
+			newShader = new Shader(&success, infoLog, vertex, fragment, geometry, tcs, tes);
 		else
 			newShader = new Shader(&success, infoLog, vertex, fragment);
 
