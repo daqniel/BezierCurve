@@ -1,5 +1,5 @@
 #include <iostream>
-#include <glad/glad.h>
+#include <glad41/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -14,7 +14,10 @@
 #include "CubicBezier.h"
 #include "QuadraticBezier.h"
 #include "QuadraticBezierPatch.h"
+#include "CubicBezierPatch.h"
 #include "Grid3D.h"
+#include "Light.h"
+#include "Globals.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -27,7 +30,13 @@ int controlPolygonEvalLevel = 0;
 bool drawControlPoints = true;
 bool drawEvalPoint = true;
 bool drawFrenetFrame = false;
+
+bool drawHexoid = false;
+bool drawOctoid = false;
 std::map<std::string, std::vector<CubicBezier>> images;
+
+std::vector<Light> Global::lights;
+unsigned int Light::NUM_LIGHTS = 0;
 
 int main()
 {
@@ -69,6 +78,10 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_PROGRAM_POINT_SIZE);
 
+	GLint maxpatchverts;
+	glGetIntegerv(GL_MAX_PATCH_VERTICES, &maxpatchverts);
+	std::cout << "maxpatchverts: " << maxpatchverts << std::endl;
+
 	Shader* linesegmentshader = ResourceManager::loadShader("Shaders/linesegment.vert", "Shaders/linesegment.frag");
 	Shader* controlpolygonshader = ResourceManager::loadShader("Shaders/controlpolygon.vert", "Shaders/controlpolygon.frag");
 	Shader* gridshader = ResourceManager::loadShader("Shaders/grid.vert", "Shaders/grid.frag");
@@ -76,7 +89,20 @@ int main()
 	Shader* gridlineshader = ResourceManager::loadShader("Shaders/gridticks.vert", "Shaders/gridlines.frag", "Shaders/gridlines.geom");
 	Shader* bezierpointshader = ResourceManager::loadShader("Shaders/bezierpoint.vert", "Shaders/bezierpoint.frag");
 	Shader* frenetshader = ResourceManager::loadShader("Shaders/frenet.vert", "Shaders/frenet.frag", "Shaders/frenet.geom");
-	Shader* patchshader = ResourceManager::loadShader("Shaders/patch.vert", "Shaders/patch.frag");
+	//Shader* patchshader = ResourceManager::loadShader("Shaders/patch.vert", "Shaders/patch.frag");
+
+	Shader* cubicpatchshader = ResourceManager::loadShader("Shaders/cubicpatch.vert", "Shaders/phong.frag", nullptr, "Shaders/cubicpatch.tesc", "Shaders/cubicpatch.tese");
+	Shader* quadraticpatchshader = ResourceManager::loadShader("Shaders/quadraticpatch.vert", "Shaders/phong.frag", nullptr, "Shaders/quadraticpatch.tesc", "Shaders/quadraticpatch.tese");
+
+	//Shader* cubicpatchshadercurvature = ResourceManager::loadShader("Shaders/cubicpatch.vert", "Shaders/patch.frag", nullptr, "Shaders/cubicpatch.tesc", "Shaders/cubicpatch.tese");
+
+	Light testlight(glm::vec3(20, 15, 20), glm::vec3(1.0, 1.0, 1.0), glm::vec3(.05));
+	Global::lights.push_back(testlight);
+	Light testlight2(glm::vec3(-20, 15, -10), glm::vec3(1.0, 1.0, 1.0), glm::vec3(.05));
+	Global::lights.push_back(testlight2);
+	Light testlight3(glm::vec3(0, 20, 0), glm::vec3(1.0, 1.0, 1.0), glm::vec3(.05));
+	Global::lights.push_back(testlight3);
+
 
 	glClearColor(.3, .3, .3, 1.0);
 	CubicBezier lefteye1;
@@ -151,6 +177,8 @@ int main()
 	QuadraticBezierPatch hexoid;
 	hexoid.generate(.01);
 
+	CubicBezierPatch octoid;
+
 	while (!glfwWindowShouldClose(window))
 	{
 		float currentFrame = glfwGetTime();
@@ -174,11 +202,25 @@ int main()
 		grid.draw(gridshader, view, projection);
 		grid.drawticks(gridtickshader, view, projection);
 
-		quadBezier.draw(linesegmentshader, view, projection);
+		//quadBezier.draw(linesegmentshader, view, projection);
 
 
-		hexoid.draw(patchshader, view, projection);
-		hexoid.drawControlNet(bezierpointshader, view, projection);
+		if (drawHexoid)
+		{
+			hexoid.draw(quadraticpatchshader, view, projection);
+			if (drawControlPoints)
+				hexoid.drawControlNet(bezierpointshader, view, projection);
+		}
+
+		if (drawOctoid)
+		{
+			cubicpatchshader->use();
+			cubicpatchshader->setVect3f("cameraPos", camera.Position);
+			octoid.draw(cubicpatchshader, view, projection);
+			if (drawControlPoints)
+				octoid.drawControlNet(bezierpointshader, view, projection);
+		}
+
 
 		for (auto& curve : image)
 		{
@@ -280,6 +322,16 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
 		drawFrenetFrame = !drawFrenetFrame;
+
+	if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
+	{
+		drawOctoid = !drawOctoid; drawHexoid = false;
+	}
+
+	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
+	{
+		drawHexoid = !drawHexoid; drawOctoid = false;
+	}
 
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 	{

@@ -141,8 +141,10 @@
     <ClCompile Include="Bezier.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CubicBezier.cpp" />
+    <ClCompile Include="CubicBezierPatch.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Grid3D.cpp" />
+    <ClCompile Include="Light.cpp" />
     <ClCompile Include="QuadraticBezierPatch.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="QuadraticBezier.cpp" />
@@ -153,6 +155,9 @@
     <None Include="Shaders\bezierPoint.vert" />
     <None Include="Shaders\controlpolygon.frag" />
     <None Include="Shaders\controlpolygon.vert" />
+    <None Include="Shaders\cubicpatch.tesc" />
+    <None Include="Shaders\cubicpatch.tese" />
+    <None Include="Shaders\cubicpatch.vert" />
     <None Include="Shaders\frenet.frag" />
     <None Include="Shaders\frenet.geom" />
     <None Include="Shaders\frenet.vert" />
@@ -168,12 +173,19 @@
     <None Include="Shaders\linesegment.vert" />
     <None Include="Shaders\patch.frag" />
     <None Include="Shaders\patch.vert" />
+    <None Include="Shaders\phong.frag" />
+    <None Include="Shaders\quadraticpatch.tesc" />
+    <None Include="Shaders\quadraticpatch.tese" />
+    <None Include="Shaders\quadraticpatch.vert" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Bezier.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CubicBezier.h" />
+    <ClInclude Include="CubicBezierPatch.h" />
+    <ClInclude Include="Globals.h" />
     <ClInclude Include="Grid3D.h" />
+    <ClInclude Include="Light.h" />
     <ClInclude Include="QuadraticBezierPatch.h" />
     <ClInclude Include="QuadraticBezier.h" />
     <ClInclude Include="ResourceManager.h" />

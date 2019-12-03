@@ -2,16 +2,18 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glad41/glad.h>
 #include <vector>
-#include "QuadraticBezier.h"
+#include "CubicBezier.h"
 #include <iostream>
 #include "Shader.h"
+
 #include "Globals.h"
 
-class QuadraticBezierPatch
+
+class CubicBezierPatch
 {
 public:
-	QuadraticBezierPatch();
-	~QuadraticBezierPatch();
+	CubicBezierPatch();
+	~CubicBezierPatch();
 
 	void draw(Shader* s, glm::mat4 view, glm::mat4 projection);
 	void drawControlNet(Shader* s, glm::mat4 view, glm::mat4 projection);

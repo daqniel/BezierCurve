@@ -42,6 +42,12 @@
     <ClCompile Include="QuadraticBezierPatch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="CubicBezierPatch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Light.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\linesegment.frag">
@@ -104,6 +110,27 @@
     <None Include="Shaders\patch.frag">
       <Filter>Resource Files\Shaders</Filter>
     </None>
+    <None Include="Shaders\cubicpatch.tesc">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\cubicpatch.tese">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\cubicpatch.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\phong.frag">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\quadraticpatch.tesc">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\quadraticpatch.tese">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Shaders\quadraticpatch.vert">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
@@ -128,6 +155,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="QuadraticBezierPatch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CubicBezierPatch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Globals.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

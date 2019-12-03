@@ -2,10 +2,15 @@
 
 out vec4 FragColor;
 
-in vec4 fragPos;
+in vec3 fragPos;
+in vec3 fragNorm;
 
-void main()
-{
-		FragColor = vec4(fragPos.xyz, 1.0);
-		FragColor = vec4(1.0);
+in float curvature;
+uniform float maxCurvature;
+uniform float minCurvature;
+
+void main() {
+  FragColor = vec4(fragPos, 1.0);
+  // FragColor = vec4(fragNorm, 1.0);
+  // FragColor = vec4(curvature, )
 }
