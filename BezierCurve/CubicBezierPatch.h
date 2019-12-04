@@ -17,6 +17,7 @@ public:
 
 	void draw(Shader* s, glm::mat4 view, glm::mat4 projection);
 	void drawControlNet(Shader* s, glm::mat4 view, glm::mat4 projection);
+	void drawControlNormals(Shader* s, glm::mat4 view, glm::mat4 projection);
 	void generate(float interval);
 
 private:

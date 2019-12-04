@@ -11,6 +11,6 @@ uniform float minCurvature;
 
 void main() {
   FragColor = vec4(fragPos, 1.0);
-  // FragColor = vec4(fragNorm, 1.0);
-  // FragColor = vec4(curvature, )
+  FragColor = vec4(fragNorm, 1.0);
+  FragColor = vec4(.7, .7, .7, 1.0);
 }

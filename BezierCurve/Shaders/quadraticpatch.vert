@@ -14,7 +14,7 @@ uniform mat4 projection;
 
 void main() {
   worldPos_TCS = (model * vec4(aPos, 1.0)).xyz;
-  normal_TCS = (model * vec4(aNorm, 0.0)).xyz; // need to implement
+  normal_TCS = (model * vec4(aNorm, 0.0)).xyz;
   normal_TCS = normalize(normal_TCS);
   gl_Position = vec4(aPos.xyz, 1.0);
 }

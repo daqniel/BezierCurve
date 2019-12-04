@@ -72,6 +72,11 @@ glm::vec4 QuadraticBezier::evaluate(float t)
 	return m_eval_point;
 }
 
+glm::vec3 QuadraticBezier::evaluateDerivative(float t)
+{
+	return 2 * (1 - t) * (m_controlpoints[1] - m_controlpoints[0]) + 2 * t * (m_controlpoints[2] - m_controlpoints[1]);
+}
+
 void QuadraticBezier::draw(Shader* s, glm::mat4 view, glm::mat4 projection)
 {
 	s->use();

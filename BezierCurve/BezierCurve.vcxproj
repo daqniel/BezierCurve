@@ -150,6 +150,8 @@
     <ClCompile Include="QuadraticBezier.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="normal.geom" />
+    <None Include="normal.vert" />
     <None Include="Shaders\bezierPoint.frag" />
     <None Include="Shaders\bezierPoint.geom" />
     <None Include="Shaders\bezierPoint.vert" />

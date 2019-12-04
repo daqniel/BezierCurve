@@ -34,6 +34,8 @@ public:
 
 	glm::vec4 evaluate(float t);
 
+	glm::vec3 evaluateDerivative(float t);
+
 	void draw(Shader* s, glm::mat4 view, glm::mat4 projection);
 	void drawEvalPoint(Shader* s, glm::mat4 view, glm::mat4 projection);
 	void drawControlPoints(Shader* s, glm::mat4 view, glm::mat4 projection);

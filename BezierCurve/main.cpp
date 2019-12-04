@@ -29,6 +29,7 @@ bool drawControlPolygon = false;
 int controlPolygonEvalLevel = 0;
 bool drawControlPoints = true;
 bool drawEvalPoint = true;
+bool drawNormals = false;
 bool drawFrenetFrame = false;
 
 bool drawHexoid = false;
@@ -40,8 +41,8 @@ unsigned int Light::NUM_LIGHTS = 0;
 
 int main()
 {
-	const float SCR_WIDTH = 1000;
-	const float SCR_HEIGHT = 1000;
+	const float SCR_WIDTH = 1400;
+	const float SCR_HEIGHT = 1400;
 
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -89,10 +90,11 @@ int main()
 	Shader* gridlineshader = ResourceManager::loadShader("Shaders/gridticks.vert", "Shaders/gridlines.frag", "Shaders/gridlines.geom");
 	Shader* bezierpointshader = ResourceManager::loadShader("Shaders/bezierpoint.vert", "Shaders/bezierpoint.frag");
 	Shader* frenetshader = ResourceManager::loadShader("Shaders/frenet.vert", "Shaders/frenet.frag", "Shaders/frenet.geom");
+	Shader* normshader = ResourceManager::loadShader("normal.vert", "Shaders/bezierpoint.frag", "normal.geom");
 	//Shader* patchshader = ResourceManager::loadShader("Shaders/patch.vert", "Shaders/patch.frag");
 
 	Shader* cubicpatchshader = ResourceManager::loadShader("Shaders/cubicpatch.vert", "Shaders/phong.frag", nullptr, "Shaders/cubicpatch.tesc", "Shaders/cubicpatch.tese");
-	Shader* quadraticpatchshader = ResourceManager::loadShader("Shaders/quadraticpatch.vert", "Shaders/phong.frag", nullptr, "Shaders/quadraticpatch.tesc", "Shaders/quadraticpatch.tese");
+	Shader* quadraticpatchshader = ResourceManager::loadShader("Shaders/quadraticpatch.vert", "Shaders/patch.frag", nullptr, "Shaders/quadraticpatch.tesc", "Shaders/quadraticpatch.tese");
 
 	//Shader* cubicpatchshadercurvature = ResourceManager::loadShader("Shaders/cubicpatch.vert", "Shaders/patch.frag", nullptr, "Shaders/cubicpatch.tesc", "Shaders/cubicpatch.tese");
 
@@ -175,7 +177,6 @@ int main()
 	quadBezier.setControlPoints(glm::vec3(0), glm::vec3(1), glm::vec3(2, 0, 2));
 
 	QuadraticBezierPatch hexoid;
-	hexoid.generate(.01);
 
 	CubicBezierPatch octoid;
 
@@ -202,15 +203,19 @@ int main()
 		grid.draw(gridshader, view, projection);
 		grid.drawticks(gridtickshader, view, projection);
 
-		//quadBezier.draw(linesegmentshader, view, projection);
 
 
 		if (drawHexoid)
 		{
+			cubicpatchshader->use();
+			cubicpatchshader->setVect3f("cameraPos", camera.Position);
 			hexoid.draw(quadraticpatchshader, view, projection);
 			if (drawControlPoints)
 				hexoid.drawControlNet(bezierpointshader, view, projection);
+			if (drawNormals)
+				hexoid.drawControlNormals(normshader, view, projection);
 		}
+
 
 		if (drawOctoid)
 		{
@@ -219,6 +224,9 @@ int main()
 			octoid.draw(cubicpatchshader, view, projection);
 			if (drawControlPoints)
 				octoid.drawControlNet(bezierpointshader, view, projection);
+			if (drawNormals)
+				octoid.drawControlNormals(normshader, view, projection);
+
 		}
 
 
@@ -332,6 +340,12 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	{
 		drawHexoid = !drawHexoid; drawOctoid = false;
 	}
+
+	if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
+	{
+		drawNormals = !drawNormals;
+	}
+
 
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 	{
