@@ -1,5 +1,7 @@
 # BezierCurve
 
+![preview gif](https://github.com/daqniel/BezierCurve/blob/master/images/beziercurve_preview_gif.gif?raw=true)
+
 Plotting and animating 3D Bezier curves and surfaces (Hexoid/Octoid) using OpenGL and C++
 
 Topics:
