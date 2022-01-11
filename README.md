@@ -1,13 +1,12 @@
 # BezierCurve
 
-Plotting and animating 3D Bezier curves using OpenGL and C++
+Plotting and animating 3D Bezier curves and surfaces (Hexoid/Octoid) using OpenGL and C++
 
 Topics:
-- Geometric Modeling
+- Geometric Modeling (Bezier Curves/Surfaces)
 - OpenGL
-- Vertex/Fragment/Geometry shaders
+- Vertex/Fragment/Geometry/Tessellation shaders
 
 TODO:
-- Bezier patches / Surfaces
 - Restructure to CMake build system
 - Rewrite in JS or Rust to target web
