@@ -1,6 +1,6 @@
 #pragma once
 #include <glm/gtc/matrix_transform.hpp>
-#include <glad41/glad.h>
+#include <glad/glad.h>
 #include <vector>
 #include "CubicBezier.h"
 #include <iostream>

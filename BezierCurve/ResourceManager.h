@@ -6,7 +6,7 @@
 #include <fstream>
 #include <iostream>
 #include <algorithm>
-#include <stb_image/stb_image.h>
+#include <stb_image.h>
 #include <string>
 using std::string;
 using std::vector;
