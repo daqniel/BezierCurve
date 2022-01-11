@@ -9,6 +9,8 @@ Topics:
 - OpenGL
 - Vertex/Fragment/Geometry/Tessellation shaders
 
+Currently compiles targeting Visual Studio 2019 and Windows 10 x64, I intend to restructure to CMake for cross-platform compilation.
+
 Keybinds:
 ```
 1: show example curve set 1
