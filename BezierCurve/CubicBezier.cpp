@@ -49,15 +49,6 @@ void CubicBezier::setControlPoints(glm::vec3 c0, glm::vec3 c1, glm::vec3 c2, glm
 	generate();
 }
 
-// maybe implement this some day idk
-//void rotateControlPoints(float angle, glm::vec3 axis)
-//{
-//	//glm::mat4 model;
-//	//model = glm::translate()
-//	//model = glm::rotate(model, glm::radians(angle), axis);
-//
-//}
-
 glm::vec4 CubicBezier::evaluate(float t)
 {
 	float s = 1 - t;
@@ -73,8 +64,6 @@ glm::vec4 CubicBezier::evaluate(float t)
 
 	m_eval_point = glm::vec4(glm::vec3(m_level2[0]) * s + glm::vec3(m_level2[1]) * t, t);
 
-	// MAYBE CHANGE CLASS STRUCTURE, PROBABLY WANT TO STORE MULTIPLE SAMPLES OF EVALUATION.
-	// OR, have it evaluate in constructor and store all the points we need to display, use geometry shader for showing steps?
 	return m_eval_point;
 }
 
@@ -89,9 +78,7 @@ void CubicBezier::draw(Shader* s, glm::mat4 view, glm::mat4 projection)
 
 	glBindVertexArray(VAO);
 
-
 	glDrawArrays(GL_LINE_STRIP, 0, points.size());
-
 }
 
 void CubicBezier::drawEvalPoint(Shader* s, glm::mat4 view, glm::mat4 projection)
@@ -161,7 +148,6 @@ void CubicBezier::drawFrenetFrame(Shader* s, glm::mat4 view, glm::mat4 projectio
 {
 	glm::vec4 empty;
 
-	//probably need to parametrize to arclength or some shit idk
 	glm::vec4 prev_point;
 	glm::vec4 prev_prev_point;
 	glm::vec4 next_point;

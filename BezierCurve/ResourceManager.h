@@ -6,7 +6,6 @@
 #include <fstream>
 #include <iostream>
 #include <algorithm>
-#include <stb_image.h>
 #include <string>
 using std::string;
 using std::vector;
@@ -30,28 +29,6 @@ public:
 		}
 	};
 
-	//int loadTexture(string imagePath)
-	//{
-	//	int width, height, nrChannels;
-
-	//	Texture newTexture;
-	//	newTexture.setMaxFilter(GL_LINEAR);
-	//	newTexture.setMinFilter(GL_LINEAR_MIPMAP_LINEAR);
-	//	newTexture.setTextureWrapS(GL_REPEAT);
-	//	newTexture.setTextureWrapT(GL_REPEAT);
-	//	unsigned char* data = stbi_load(imagePath.c_str(), &width, &height, &nrChannels, 0);
-	//	if (data)
-	//	{
-	//		newTexture.generate(width, height, nrChannels, data);
-	//	}
-	//	else
-	//	{
-	//		std::cout << "ERROR::TEXTURE::IMAGE_LOAD_FAILED" << std::endl;
-	//		return -1;
-	//	}
-	//	stbi_image_free(data);
-	//	return newTexture.ID;
-	//}
 	enum ShaderType
 	{
 		VERTEX,
@@ -128,11 +105,6 @@ public:
 
 	static Shader* loadShader(const GLchar* vertexPath, const GLchar* fragPath, const GLchar* geomPath = nullptr, const GLchar* tcsPath = nullptr, const GLchar* tesPath = nullptr)
 	{
-		/*if (numShaders == MAX_NUM_SHADERS)
-		{
-			std::cout << "ERROR::SHADER::SHADER_NUM_LIMIT_REACHED\n" << "Try modifying MAX_NUM_SHADERS" << std::endl;
-			return -1;
-		}*/
 		int success;
 		char* infoLog = new char[512];
 		GLuint vertex, frag, geom, tcs, tes;
@@ -147,96 +119,6 @@ public:
 			tcs = compileShader(tcsPath, TCS);
 		if (tesPath)
 			tes = compileShader(tesPath, TES);
-
-		///* Step 1: Retrieve source code from filepath */
-		//std::string vertexCode;
-		//std::string fragCode;
-		//std::string geomCode;
-		//std::ifstream vShaderFile;
-		//std::ifstream fShaderFile;
-		//std::ifstream gShaderFile;
-
-		//// ensure ifstream objs can throw exceptions
-		//vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-		//fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-		//gShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-
-		//// read from files
-		//try
-		//{
-		//	vShaderFile.open(vertexPath);
-		//	fShaderFile.open(fragPath);
-		//	std::stringstream vShaderStream, fShaderStream;
-		//	vShaderStream << vShaderFile.rdbuf();
-		//	fShaderStream << fShaderFile.rdbuf();
-		//	vShaderFile.close();
-		//	fShaderFile.close();
-		//	vertexCode = vShaderStream.str();
-		//	fragCode = fShaderStream.str();
-
-		//	if (geomPath)
-		//	{
-		//		gShaderFile.open(geomPath);
-		//		std::stringstream gShaderStream;
-		//		gShaderStream << gShaderFile.rdbuf();
-		//		gShaderFile.close();
-		//		geomCode = gShaderStream.str();
-		//	}
-		//}
-		//catch (std::ifstream::failure e)
-		//{
-		//	std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ" << std::endl;
-		//}
-		//const char* vShaderCode = vertexCode.c_str();
-		//const char* fShaderCode = fragCode.c_str();
-		//const char* gShaderCode = nullptr;
-		//if (geomPath)
-		//{
-		//	gShaderCode = geomCode.c_str();
-		//}
-
-		///* Step 2: Compile shaders */
-		//unsigned int vertex, fragment, geometry;
-
-		//// vertex shader
-		//vertex = glCreateShader(GL_VERTEX_SHADER);
-		//glShaderSource(vertex, 1, &vShaderCode, NULL);
-		//glCompileShader(vertex);
-		//glGetShaderiv(vertex, GL_COMPILE_STATUS, &success);
-		//if (!success)
-		//{
-		//	glGetShaderInfoLog(vertex, 512, NULL, infoLog);
-		//	std::cout << "ERROR::SHADER::VERTEX::COMPILE_FAILED\n" << infoLog << std::endl;
-		//	return nullptr;
-		//}
-
-		//// fragment shader
-		//fragment = glCreateShader(GL_FRAGMENT_SHADER);
-		//glShaderSource(fragment, 1, &fShaderCode, NULL);
-		//glCompileShader(fragment);
-		//glGetShaderiv(fragment, GL_COMPILE_STATUS, &success);
-		//if (!success)
-		//{
-		//	glGetShaderInfoLog(fragment, 512, NULL, infoLog);
-		//	std::cout << "ERROR::SHADER::FRAGMENT::COMPILE_FAILED\n" << infoLog << std::endl;
-		//	return nullptr;
-		//}
-
-		//// geometry shader
-
-		//if (geomPath)
-		//{
-		//	geometry = glCreateShader(GL_GEOMETRY_SHADER);
-		//	glShaderSource(geometry, 1, &gShaderCode, NULL);
-		//	glCompileShader(geometry);
-		//	glGetShaderiv(geometry, GL_COMPILE_STATUS, &success);
-		//	if (!success)
-		//	{
-		//		glGetShaderInfoLog(geometry, 512, NULL, infoLog);
-		//		std::cout << "ERROR::SHADER::GEOMETRY::COMPILE_FAILED\n" << infoLog << std::endl;
-		//		return nullptr;
-		//	}
-		//}
 
 		/* Step 3: Create program */
 		Shader* newShader = nullptr;

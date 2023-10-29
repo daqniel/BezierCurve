@@ -41,6 +41,7 @@ unsigned int Light::NUM_LIGHTS = 0;
 
 int main()
 {
+	// GLFW window configuration
 	const float SCR_WIDTH = 1400;
 	const float SCR_HEIGHT = 1400;
 
@@ -50,9 +51,6 @@ int main()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_SAMPLES, 4);
 
-	Camera camera = Camera(glm::vec3(0.0, 0.0, 3.0));
-	camera.faceOrigin();
-
 	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Bezier Curves", NULL, NULL);
 	if (!window)
 	{
@@ -60,22 +58,24 @@ int main()
 		return -1;
 	}
 
-	glfwSetWindowUserPointer(window, &camera);
-
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	glfwSetKeyCallback(window, key_callback);
 	glfwSetScrollCallback(window, scroll_callback);
 	glfwSetCursorPosCallback(window, mouse_callback);
-
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	// define scene camera
+	Camera camera = Camera(glm::vec3(0.0, 0.0, 3.0));
+	camera.faceOrigin();
+	glfwSetWindowUserPointer(window, &camera);
 
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "ERROR::GLAD::failed to load init GLAD" << std::endl;
 	}
 
-
+	// OpenGL config
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_PROGRAM_POINT_SIZE);
 
@@ -83,21 +83,19 @@ int main()
 	glGetIntegerv(GL_MAX_PATCH_VERTICES, &maxpatchverts);
 	std::cout << "maxpatchverts: " << maxpatchverts << std::endl;
 
+	// compile shader program objects
 	Shader* linesegmentshader = ResourceManager::loadShader("Shaders/linesegment.vert", "Shaders/linesegment.frag");
 	Shader* controlpolygonshader = ResourceManager::loadShader("Shaders/controlpolygon.vert", "Shaders/controlpolygon.frag");
 	Shader* gridshader = ResourceManager::loadShader("Shaders/grid.vert", "Shaders/grid.frag");
 	Shader* gridtickshader = ResourceManager::loadShader("Shaders/gridticks.vert", "Shaders/gridticks.frag", "Shaders/gridticks.geom");
 	Shader* gridlineshader = ResourceManager::loadShader("Shaders/gridticks.vert", "Shaders/gridlines.frag", "Shaders/gridlines.geom");
-	Shader* bezierpointshader = ResourceManager::loadShader("Shaders/bezierpoint.vert", "Shaders/bezierpoint.frag");
+	Shader* bezierpointshader = ResourceManager::loadShader("Shaders/bezierPoint.vert", "Shaders/bezierPoint.frag");
 	Shader* frenetshader = ResourceManager::loadShader("Shaders/frenet.vert", "Shaders/frenet.frag", "Shaders/frenet.geom");
-	Shader* normshader = ResourceManager::loadShader("normal.vert", "Shaders/bezierpoint.frag", "normal.geom");
-	//Shader* patchshader = ResourceManager::loadShader("Shaders/patch.vert", "Shaders/patch.frag");
-
+	Shader* normshader = ResourceManager::loadShader("normal.vert", "Shaders/bezierPoint.frag", "normal.geom");
 	Shader* cubicpatchshader = ResourceManager::loadShader("Shaders/cubicpatch.vert", "Shaders/phong.frag", nullptr, "Shaders/cubicpatch.tesc", "Shaders/cubicpatch.tese");
 	Shader* quadraticpatchshader = ResourceManager::loadShader("Shaders/quadraticpatch.vert", "Shaders/patch.frag", nullptr, "Shaders/quadraticpatch.tesc", "Shaders/quadraticpatch.tese");
-
-	//Shader* cubicpatchshadercurvature = ResourceManager::loadShader("Shaders/cubicpatch.vert", "Shaders/patch.frag", nullptr, "Shaders/cubicpatch.tesc", "Shaders/cubicpatch.tese");
-
+ 
+	// Lighting config (for bezier surfaces)
 	Light testlight(glm::vec3(20, 15, 20), glm::vec3(1.0, 1.0, 1.0), glm::vec3(.05));
 	Global::lights.push_back(testlight);
 	Light testlight2(glm::vec3(-20, 15, -10), glm::vec3(1.0, 1.0, 1.0), glm::vec3(.05));
@@ -105,17 +103,15 @@ int main()
 	Light testlight3(glm::vec3(0, 20, 0), glm::vec3(1.0, 1.0, 1.0), glm::vec3(.05));
 	Global::lights.push_back(testlight3);
 
-
 	glClearColor(.3, .3, .3, 1.0);
-	CubicBezier lefteye1;
+	
+	/** Define a series of images built from bezier curves **/
+
+	CubicBezier lefteye1, lefteye2, righteye1, righteye2, smile;
 	lefteye1.setControlPoints(glm::vec3(1, 3, 2), glm::vec3(1, 4, 2), glm::vec3(1.5f, 4, 2), glm::vec3(1.5f, 3, 2));
-	CubicBezier lefteye2;
 	lefteye2.setControlPoints(glm::vec3(1, 3, 2), glm::vec3(1, 2, 2), glm::vec3(1.5, 2, 2), glm::vec3(1.5, 3, 2));
-	CubicBezier righteye1;
 	righteye1.setControlPoints(glm::vec3(2, 3, 2), glm::vec3(2, 4, 2), glm::vec3(2.5, 4, 2), glm::vec3(2.5, 3, 2));
-	CubicBezier righteye2;
 	righteye2.setControlPoints(glm::vec3(2, 3, 2), glm::vec3(2, 2, 2), glm::vec3(2.5, 2, 2), glm::vec3(2.5, 3, 2));
-	CubicBezier smile;
 	smile.setControlPoints(glm::vec3(.5, 2, 2), glm::vec3(1.75, 1, 2), glm::vec3(2.375, 1, 2), glm::vec3(3, 2, 2));
 	images["smile"].push_back(lefteye1);
 	images["smile"].push_back(lefteye2);
@@ -123,18 +119,15 @@ int main()
 	images["smile"].push_back(righteye2);
 	images["smile"].push_back(smile);
 
-	CubicBezier bezier1;
+	CubicBezier bezier1, bezier2;
 	bezier1.setControlPoints(glm::vec3(1, 1, 1), glm::vec3(2, 1, 1), glm::vec3(4, 1, 0), glm::vec3(3.75, 1.25, 0));
 	bezier1.setControlColor(glm::vec4(0, 1, 1, 1));
-	CubicBezier bezier2;
 	bezier2.setControlPoints(glm::vec3(3.75, 1.25, 0), glm::vec3(3.5, 1.5, 0), glm::vec3(1, 2, 1), glm::vec3(1, 1, 1));
 	bezier2.setControlColor(glm::vec4(1, 0, 1, 1));
-
 	images["partb"].push_back(bezier1);
 	images["partb"].push_back(bezier2);
 
-	CubicBezier bezier3;
-	CubicBezier bezier4;
+	CubicBezier bezier3, bezier4;
 	bezier3.setControlPoints(glm::vec3(0), glm::vec3(1), glm::vec3(2), glm::vec3(3));
 	bezier3.setControlColor(glm::vec4(0, 1, 1, 1));
 	bezier4.setControlPoints(glm::vec3(3), glm::vec3(3.5, 2.5, 3.5), glm::vec3(3, 1.5, 3), glm::vec3(2.25, .75, 2.25));
@@ -142,20 +135,24 @@ int main()
 	images["idk"].push_back(bezier3);
 	images["idk"].push_back(bezier4);
 
-
-	CubicBezier test1;
-	CubicBezier test2;
-	CubicBezier test3;
-	CubicBezier test4;
+	CubicBezier test1, test2, test3, test4;
 	test1.setControlPoints(glm::vec3(0, 0, 3), glm::vec3(2, 0, 3), glm::vec3(3, 0, 2), glm::vec3(3, 0, 0));
-	images["octoid"].push_back(test1);
 	test2.setControlPoints(glm::vec3(0, 0, 3), glm::vec3(0, 2, 3), glm::vec3(0, 3, 2), glm::vec3(0, 3, 0));
-	images["octoid"].push_back(test2);
 	test3.setControlPoints(glm::vec3(0, 3, 0), glm::vec3(2, 3, 0), glm::vec3(3, 2, 0), glm::vec3(3, 0, 0));
-	images["octoid"].push_back(test3);
 	test4.setControlPoints(glm::vec3(0, 2, 3), glm::vec3(3, 3, 3), glm::vec3(3, 3, 3), glm::vec3(3, 2, 0));
+	images["octoid"].push_back(test1);
+	images["octoid"].push_back(test2);
+	images["octoid"].push_back(test3);
 	images["octoid"].push_back(test4);
 
+
+	QuadraticBezier quadBezier;
+	quadBezier.setControlPoints(glm::vec3(0), glm::vec3(1), glm::vec3(2, 0, 2));
+
+	QuadraticBezierPatch hexoid;
+	CubicBezierPatch octoid;
+ 
+	/** define boundaries for a coordinate grid **/
 	Grid3D grid;
 	glm::vec3 pos(4);
 	glm::vec3 neg(0);
@@ -164,36 +161,36 @@ int main()
 	pos = glm::vec3(3);
 	grid.setGridBoundaries(pos, neg);
 
+	// place camera in center of coordinate grid
 	camera.origin = glm::vec3((pos.x + neg.x) / 2, (pos.y + neg.y) / 2, -(pos.z + neg.z) / 2);
-
+	
+	// timing variables useful for smooth animation
 	float deltaTime = 0;
 	float lastFrame = 0;
-
 	float time = 0;
+	
+	// image used 
 	std::vector<CubicBezier> image;
 	camera.reset();
 
-	QuadraticBezier quadBezier;
-	quadBezier.setControlPoints(glm::vec3(0), glm::vec3(1), glm::vec3(2, 0, 2));
-
-	QuadraticBezierPatch hexoid;
-
-	CubicBezierPatch octoid;
-
+	// main program loop
 	while (!glfwWindowShouldClose(window))
 	{
+		// calculate time delta each frame
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
+		// clear buffers
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// MVP Matrix definition
 		glm::mat4 model = glm::scale(glm::mat4(1.0), glm::vec3(1.0, 1.0, -1.0));
 		glm::mat4 view = camera.GetViewMatrix();
 		view = glm::scale(view, glm::vec3(1.0, 1.0, -1.0));
 		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), SCR_WIDTH / SCR_HEIGHT, 0.1f, 100.f);
 
-
+		// draw the grid and optional tick lines
 		if (drawGridLines)
 		{
 			grid.drawticklines(gridlineshader, view, projection);
@@ -202,8 +199,6 @@ int main()
 		glLineWidth(3);
 		grid.draw(gridshader, view, projection);
 		grid.drawticks(gridtickshader, view, projection);
-
-
 
 		if (drawHexoid)
 		{
@@ -215,7 +210,6 @@ int main()
 			if (drawNormals)
 				hexoid.drawControlNormals(normshader, view, projection);
 		}
-
 
 		if (drawOctoid)
 		{
@@ -229,7 +223,7 @@ int main()
 
 		}
 
-
+		// draw all bezier curves within current selected image
 		for (auto& curve : image)
 		{
 			curve.draw(linesegmentshader, view, projection);
@@ -248,6 +242,7 @@ int main()
 
 		glLineWidth(1);
 
+		// update bezier curve values based on user input
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 			camera.ProcessKeyboard(FORWARD, deltaTime);
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
@@ -295,8 +290,6 @@ int main()
 			image = images["octoid"];
 		}
 
-
-
 		glfwPollEvents();
 		glfwSwapBuffers(window);
 
@@ -332,32 +325,21 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		drawFrenetFrame = !drawFrenetFrame;
 
 	if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS)
-	{
 		drawOctoid = !drawOctoid; drawHexoid = false;
-	}
 
 	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
-	{
 		drawHexoid = !drawHexoid; drawOctoid = false;
-	}
 
 	if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
-	{
 		drawNormals = !drawNormals;
-	}
-
 
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-	{
 		if (controlPolygonEvalLevel > 0)
 			controlPolygonEvalLevel--;
-	}
+
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-	{
 		if (controlPolygonEvalLevel < 2)
 			controlPolygonEvalLevel++;
-	}
-
 }
 
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
