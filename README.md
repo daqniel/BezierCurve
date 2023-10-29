@@ -9,9 +9,22 @@ Topics:
 - OpenGL
 - Vertex/Fragment/Geometry/Tessellation shaders
 
-Currently compiles targeting Visual Studio 2019 and Windows 10 x64, I intend to restructure to CMake for cross-platform compilation.
+# How to build and run
+Build
+```
+cd src
+mkdir build
+cd build
+cmake ..
+cmake --build .
+```
+Run
+```
+cd src
+build/BezierCurve
+```
 
-Keybinds:
+# Keybinds:
 ```
 1: show example curve set 1
 2: show example curve set 2
