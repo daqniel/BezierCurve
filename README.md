@@ -37,6 +37,8 @@ S/Scroll down: Zoom camera out
 A: decrease bezier curve "t" value
 D: increase bezier curve "t" value
 
+Arrow Key Up/Down: toggle view of derivative 2nd and 1st order Bézier curves.
+
 G: toggle XY/XZ/YZ plane grids
 C: toggle control polygons for bezier curve
 P: toggle control points for bezier curve
