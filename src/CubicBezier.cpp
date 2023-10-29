@@ -2,7 +2,6 @@
 
 CubicBezier::CubicBezier()
 {
-
 	glGenVertexArrays(1, &controlVAO);
 	glGenBuffers(1, &controlVBO);
 
@@ -101,7 +100,6 @@ void CubicBezier::drawEvalPoint(Shader* s, glm::mat4 view, glm::mat4 projection)
 
 void CubicBezier::drawControlPoints(Shader* s, glm::mat4 view, glm::mat4 projection)
 {
-
 	s->use();
 	s->setMatrix4f("model", glm::mat4(1.0));
 	s->setMatrix4f("view", view);
@@ -185,12 +183,6 @@ void CubicBezier::drawFrenetFrame(Shader* s, glm::mat4 view, glm::mat4 projectio
 	glm::vec3 normal = gradientofgradient;
 	glm::vec3 binormal = glm::cross(tangent, normal);
 
-	// use uniform buffer block thing maybe 
-	//FrenetFrame frame;
-	//frame.tangent = tangent;
-	//frame.normal = normal;
-	//frame.binormal = binormal;
-
 	s->use();
 	s->setMatrix4f("model", glm::mat4(1.0));
 	s->setMatrix4f("view", view);
@@ -202,8 +194,6 @@ void CubicBezier::drawFrenetFrame(Shader* s, glm::mat4 view, glm::mat4 projectio
 
 	s->setVect3f("control_color", control_point_color);
 
-	//probably need to paramatrize to arclength or something
-
 	glBindVertexArray(frenetVAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, frenetVBO);
@@ -213,7 +203,6 @@ void CubicBezier::drawFrenetFrame(Shader* s, glm::mat4 view, glm::mat4 projectio
 	glEnableVertexAttribArray(0);
 
 	glDrawArrays(GL_POINTS, 0, 1);
-
 }
 
 
