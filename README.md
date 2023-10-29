@@ -49,7 +49,3 @@ O: show "octoid" surface
 H: show "hexoid" surface
 N: toggle normals for surfaces
 ```
-
-TODO:
-- Restructure to CMake build system
-- Rewrite in JS or Rust to target web
