@@ -1,4 +1,4 @@
-// copy pasted from https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/camera.h
+// adapted from https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/camera.h
 
 
 #ifndef CAMERA_H
@@ -170,7 +170,7 @@ public:
 		//	Zoom -= yoffset;
 		//if (Zoom <= 1.0f)
 		//	Zoom = 1.0f;
-		//if (Zoom >= 45.0f)
+		//if (Zoom >= 45.0f)uuuuu
 		//	Zoom = 45.0f;
 	}
 

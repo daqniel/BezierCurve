@@ -55,9 +55,9 @@ QuadraticBezierPatch::~QuadraticBezierPatch()
 
 void QuadraticBezierPatch::draw(Shader* s, glm::mat4 view, glm::mat4 projection)
 {
-	glm::mat4 model(1.0);
+    glm::mat4 model = glm::scale(glm::mat4(1.0), glm::vec3(0.5, 0.5, -0.5));
 	s->use();
-	s->setMatrix4f("model", glm::mat4(1.0));
+	s->setMatrix4f("model", model);
 	s->setMatrix4f("view", view);
 	s->setMatrix4f("projection", projection);
 
